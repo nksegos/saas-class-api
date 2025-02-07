@@ -35,12 +35,14 @@ class TodoItemsController < ApplicationController
   private
 
   def set_todo
+    # Ensure the parent todo belongs to the current user
     @todo = current_user.todos.find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    render json: { error: 'Todo not found' }, status: :not_found
+    render json: { error: 'Todo not found or unauthorized' }, status: :not_found
   end
 
   def set_todo_item
+    # Lookup the item under the user’s todo only
     @todo_item = @todo.todo_items.find(params[:iid])
   rescue ActiveRecord::RecordNotFound
     render json: { error: 'Todo item not found' }, status: :not_found
@@ -50,3 +52,4 @@ class TodoItemsController < ApplicationController
     params.permit(:title, :completed)
   end
 end
+

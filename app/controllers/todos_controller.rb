@@ -40,12 +40,14 @@ class TodosController < ApplicationController
   private
 
   def set_todo
+    # Scope the todo lookup to the current_user so that only the creator can access it
     @todo = current_user.todos.find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    render json: { error: 'Todo not found' }, status: :not_found
+    render json: { error: 'Todo not found or unauthorized' }, status: :not_found
   end
 
   def todo_params
     params.permit(:title)
   end
 end
+
