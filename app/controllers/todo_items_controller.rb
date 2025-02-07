@@ -1,6 +1,13 @@
 class TodoItemsController < ApplicationController
+
   before_action :set_todo
   before_action :set_todo_item, only: [:show, :update, :destroy]
+
+  # GET /todos/:todo_id/items
+  def index
+    todo_items = @todo.todo_items
+    render json: todo_items
+  end
 
   # GET /todos/:todo_id/items/:iid
   def show
@@ -35,7 +42,6 @@ class TodoItemsController < ApplicationController
   private
 
   def set_todo
-    # Use params[:todo_id] since nested routes pass the parent's id as :todo_id
     @todo = current_user.todos.find(params[:todo_id])
   rescue ActiveRecord::RecordNotFound
     render json: { error: 'Todo not found or unauthorized' }, status: :not_found
@@ -47,8 +53,13 @@ class TodoItemsController < ApplicationController
     render json: { error: 'Todo item not found' }, status: :not_found
   end
 
+  # Updated strong parameters to support both wrapped and unwrapped parameters
   def todo_item_params
-    params.permit(:title, :completed)
+    if params[:todo_item]
+      params.require(:todo_item).permit(:title, :completed)
+    else
+      params.permit(:title, :completed)
+    end
   end
 end
 

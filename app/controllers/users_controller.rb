@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  wrap_parameters false
   skip_before_action :authenticate_request, only: [:create]
 
   # POST /signup
