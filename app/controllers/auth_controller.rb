@@ -5,7 +5,7 @@ class AuthController < ApplicationController
   def login
     user = User.find_by(email: params[:email])
     if user&.authenticate(params[:password])
-      token = encode_token(user_id: user.id)
+      token = encode_token(user_id: user.id, token_version: user.token_version)
       render json: { token: token, user: user }
     else
       render json: { error: 'Invalid email or password' }, status: :unauthorized
@@ -14,7 +14,8 @@ class AuthController < ApplicationController
 
   # GET /auth/logout
   def logout
-    # For stateless JWT, logout is typically handled client side
+    current_user.update(token_version: current_user.token_version + 1)
     render json: { message: 'Logged out' }
   end
 end
+
